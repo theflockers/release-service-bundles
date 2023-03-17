@@ -1,0 +1,26 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: publish-index-image-run-empty-params
+spec:
+  params:
+    - name: requestJsonResults
+      value: ""
+    - name: targetIndex
+      value: ""
+    - name: retries
+      value: ""
+    - name: publishingCredential
+      value: ""
+    - name: requestUpdateTimeout
+      value: ""
+  taskRef:
+    resolver: "bundles"
+    params:
+      - name: bundle
+        value: quay.io/hacbs-release/task-publish-index-image:0.1
+      - name: kind
+        value: task
+      - name: name
+        value: publish-index-image
