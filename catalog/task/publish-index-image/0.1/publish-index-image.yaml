@@ -50,14 +50,14 @@ spec:
         $(params.requestJsonResults)
         JSON
 
-        internalIndexImageCopyResolved=`jq -cr .jsonBuildInfo ${jsonInputFile} \
-        | jq -cr .internal_index_image_copy_resolved`
+        indexImageResolved=`jq -cr .jsonBuildInfo ${jsonInputFile} \
+        | jq -cr .index_image_resolved`        
 
         # rewrite the internal URL for the registry proxy to quay.io
         # i.e.
         #   registry-proxy.engineering.redhat.com/rh-osbs/iib@foo ->
         #   quay.io/rh-osbs/iib@foo
-        sourceIndex=$(echo ${internalIndexImageCopyResolved} | sed 's/.*registry-proxy.*com\//quay.io\//g')
+        sourceIndex=$(echo ${indexImageResolved} | sed 's/.*registry-proxy.*com\//quay.io\//g')
 
         skopeo copy \
         --all \
