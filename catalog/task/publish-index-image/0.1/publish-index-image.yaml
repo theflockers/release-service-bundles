@@ -14,7 +14,7 @@ spec:
   params:
     - name: requestJsonResults
       type: string
-      description: request
+      description: The JSON result of the IIB build internal request
     - name: targetIndex
       type: string
       description: targetIndex signing image

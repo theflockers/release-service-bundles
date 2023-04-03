@@ -13,8 +13,6 @@ spec:
       value: ""
     - name: publishingCredential
       value: ""
-    - name: requestUpdateTimeout
-      value: ""
   taskRef:
     resolver: "bundles"
     params:
