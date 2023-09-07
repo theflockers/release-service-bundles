@@ -56,7 +56,7 @@ spec:
           ref=$(jq -cr '.ref // "main"' <<< "${item}")
           paths=$(jq -cr '.paths // "[]"' <<< "${item}")
 
-          cat $(workspaces.data.path)/$(params.snapshotPath))
+          cat $(workspaces.data.path)/$(params.snapshotPath)
           updatedPaths=$(update-paths -p "${paths}" -f $(workspaces.data.path)/$(params.snapshotPath))
 
           internal-request -r "$(params.request)" \
