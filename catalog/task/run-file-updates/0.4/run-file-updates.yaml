@@ -36,7 +36,7 @@ spec:
       description: Workspace where the file updates to apply are defined
   steps:
     - name: run-script
-      image: quay.io/hacbs-release/release-utils:a918b3a7cbd40add5955a2f1acb4c3dbb29c44e9
+      image: quay.io/lmendes/release-utils:latest
       script: |
         #!/bin/sh
         #
