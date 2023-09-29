@@ -31,10 +31,6 @@ spec:
   - description: JSON representation of the EnterpriseContractPolicy
     name: enterpriseContractPolicy
     type: string
-  - description: The location of the bundle containing the verify-enterprise-contract
-      task
-    name: verify_ec_task_bundle
-    type: string
   tasks:
   - name: collect-data
     params:
