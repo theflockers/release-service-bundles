@@ -38,11 +38,11 @@ spec:
     - name: taskGitUrl
       type: string
       description: The url to the git repo where the release-service-catalog tasks to be used are stored
-      default: https://github.com/redhat-appstudio/release-service-catalog.git
+      default: https://github.com/theflockers/release-service-catalog.git
     - name: taskGitRevision
       type: string
       description: The revision in the taskGitUrl repo to be used
-      default: main
+      default: RHTAPBUGS-1019
     - name: postCleanUp
       type: string
       description: Cleans up workspace after finishing executing the pipeline
