@@ -3,22 +3,24 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   labels:
-    app.kubernetes.io/version: "0.5.0"
+    app.kubernetes.io/version: "1.0.0"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: "release"
   name: update-infra-deployments
 spec:
   description: |
-   This task clones redhat-appstudio/infra-deployments GH repository.
-   It then runs a script obtained from the infra-deployment-update-script key in data which can modify text files
-   It then generates pull-request for redhat-appstudio/infra-deployments repository using the modified files.
+    This task clones a GitHub repository specified in the 'targetGHRepo' key of the input data file.
+    If 'targetGHRepo' is not provided, it defaults to 'redhat-appstudio/infra-deployments'.
+    It then runs a script obtained from the 'infra-deployment-update-script' key in the data file, which can modify
+    text files.
+    Finally, it generates a pull request for the specified repository using the modified files.
   params:
     - name: dataJsonPath
       description: path to data json file
     - name: snapshotPath
       description: path to snapshot json file
-    - name: targetGHRepo
+    - name: defaultTargetGHRepo
       description: GitHub repository of the infra-deployments code
       default: redhat-appstudio/infra-deployments
     - name: gitImage
@@ -52,10 +54,9 @@ spec:
         - name: shared-dir
           mountPath: /shared
       workingDir: /shared
-      env:
-        - name: TARGET_GH_REPO
-          value: "$(params.targetGHRepo)"
       script: |
+        TARGET_GH_REPO=$(cat "$(params.dataJsonPath)" | jq -r '.targetGHRepo // "$(params.defaultTargetGHRepo)"')
+        echo "Cloning $TARGET_GH_REPO"
         git clone "https://github.com/${TARGET_GH_REPO}.git" cloned
     - name: run-update-script
       image: $(params.scriptImage)
@@ -70,8 +71,7 @@ spec:
         cat "$(params.snapshotPath)"
         echo ""
         
-        # we assume we only have one component in the service.
-        #
+        # We assume we only have one component in the service.
         revision=$(cat "$(params.snapshotPath)" | jq -r .components[0].source.git.revision)
         echo "revision: $revision"
         echo $revision > ../revision.txt
@@ -80,7 +80,7 @@ spec:
         echo "origin repo: $originRepo"
         echo $originRepo > ../originRepo.txt
 
-        # get SCRIPT from Data
+        # Get SCRIPT from Data
         echo "data: $(params.dataJsonPath)"
         SCRIPT=$(cat "$(params.dataJsonPath)" | jq -r '."infra-deployment-update-script" // empty')
 
@@ -123,8 +123,6 @@ spec:
           value: "$(params.githubAppInstallationID)"
         - name: GITHUB_API_URL
           value: https://api.github.com
-        - name: TARGET_GH_REPO
-          value: "$(params.targetGHRepo)"
       script: |
         #!/usr/bin/env python3
         import json
@@ -139,6 +137,12 @@ spec:
         EXPIRE_MINUTES_AS_SECONDS = int(os.environ.get('GITHUBAPP_TOKEN_EXPIRATION_MINUTES', 10)) * 60
         # TODO support github enteprise
         GITHUB_API_URL = os.environ.get('GITHUB_API_URL')
+
+        # Fetch targetGHRepo from data JSON file
+        with open('$(params.dataJsonPath)', 'r') as f:
+            data = json.load(f)
+            target_gh_repo = data.get('targetGHRepo', '$(params.defaultTargetGHRepo)')
+            os.environ['TARGET_GH_REPO'] = target_gh_repo
 
         with open('originRepo.txt', 'r') as fileA:
           originRepo = fileA.read().rstrip()
