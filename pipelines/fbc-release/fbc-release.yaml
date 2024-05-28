@@ -389,8 +389,6 @@ spec:
         - input: $(tasks.add-fbc-contribution-to-index-image.results.mustPublishIndexImage)
           operator: in
           values: ["true"]
-      runAfter:
-        - sign-index-image
   finally:
     - name: cleanup
       taskRef:
