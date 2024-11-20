@@ -2,15 +2,15 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: rh-push-to-external-registry
+  name: push-to-addons-registry
   labels:
-    app.kubernetes.io/version: "5.3.2"
+    app.kubernetes.io/version: "0.0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
 spec:
   description: >-
-    Tekton pipeline to release Red Hat Snapshots to an external registry. This pipeline includes pyxis interactions.
+    Tekton pipeline to release a single FBC component to the Addons Registry.
   params:
     - name: release
       type: string
@@ -80,7 +80,7 @@ spec:
         - name: snapshot
           value: $(params.snapshot)
         - name: requireInternalServices
-          value: "true"
+          value: "false"
     - name: collect-data
       taskRef:
         resolver: "git"
@@ -214,76 +214,6 @@ spec:
           workspace: release-workspace
       runAfter:
         - verify-enterprise-contract
-    - name: collect-pyxis-params
-      when:
-        - input: "$(tasks.apply-mapping.results.mapped)"
-          operator: in
-          values: ["true"]
-      taskRef:
-        resolver: "git"
-        params:
-          - name: url
-            value: $(params.taskGitUrl)
-          - name: revision
-            value: $(params.taskGitRevision)
-          - name: pathInRepo
-            value: tasks/collect-pyxis-params/collect-pyxis-params.yaml
-      params:
-        - name: dataPath
-          value: "$(tasks.collect-data.results.data)"
-      workspaces:
-        - name: data
-          workspace: release-workspace
-      runAfter:
-        - collect-data
-    - name: create-pyxis-image
-      retries: 5
-      when:
-        - input: "$(tasks.apply-mapping.results.mapped)"
-          operator: in
-          values: ["true"]
-      taskRef:
-        resolver: "git"
-        params:
-          - name: url
-            value: $(params.taskGitUrl)
-          - name: revision
-            value: $(params.taskGitRevision)
-          - name: pathInRepo
-            value: tasks/create-pyxis-image/create-pyxis-image.yaml
-      params:
-        - name: server
-          value: $(tasks.collect-pyxis-params.results.server)
-        - name: pyxisSecret
-          value: $(tasks.collect-pyxis-params.results.secret)
-        - name: snapshotPath
-          value: "$(tasks.collect-data.results.snapshotSpec)"
-      workspaces:
-        - name: data
-          workspace: release-workspace
-      runAfter:
-        - push-snapshot
-    - name: push-rpm-data-to-pyxis
-      retries: 5
-      taskRef:
-        resolver: "git"
-        params:
-          - name: url
-            value: $(params.taskGitUrl)
-          - name: revision
-            value: $(params.taskGitRevision)
-          - name: pathInRepo
-            value: tasks/push-rpm-data-to-pyxis/push-rpm-data-to-pyxis.yaml
-      params:
-        - name: pyxisJsonPath
-          value: $(tasks.create-pyxis-image.results.pyxisDataPath)
-        - name: server
-          value: $(tasks.collect-pyxis-params.results.server)
-        - name: pyxisSecret
-          value: $(tasks.collect-pyxis-params.results.secret)
-      workspaces:
-        - name: data
-          workspace: release-workspace
     - name: collect-registry-token-secret
       taskRef:
         resolver: "git"
@@ -345,7 +275,7 @@ spec:
         - name: resultsDirPath
           value: "$(tasks.collect-data.results.resultsDir)"
       runAfter:
-        - push-rpm-data-to-pyxis
+        - push-snapshot
       taskRef:
         kind: Task
         params:
@@ -378,6 +308,7 @@ spec:
         - name: data
           workspace: release-workspace
       runAfter:
+        - push-snapshot
         - run-file-updates
   finally:
     - name: cleanup

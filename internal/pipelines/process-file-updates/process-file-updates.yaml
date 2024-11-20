@@ -4,7 +4,7 @@ kind: Pipeline
 metadata:
   name: process-file-updates
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
@@ -60,3 +60,7 @@ spec:
       value: $(tasks.process-file-updates.results.fileUpdatesInfo)
     - name: buildState
       value: $(tasks.process-file-updates.results.fileUpdatesState)
+    - name: internalRequestPipelineRunName
+      value: $(context.pipelineRun.name)
+    - name: internalRequestTaskRunName
+      value: $(tasks.process-file-updates.results.internalRequestTaskRunName)

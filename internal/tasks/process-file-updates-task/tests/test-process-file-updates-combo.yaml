@@ -65,6 +65,8 @@ spec:
           value: $(tasks.run-task.results.fileUpdatesInfo)
         - name: fileUpdatesState
           value: $(tasks.run-task.results.fileUpdatesState)
+        - name: internalRequestTaskRunName
+          value: $(tasks.run-task.results.internalRequestTaskRunName)
         - name: tempDir
           value: "$(workspaces.pipeline.path)/$(context.pipelineRun.uid)/file-updates"
       taskSpec:
@@ -72,6 +74,8 @@ spec:
           - name: fileUpdatesInfo
             type: string
           - name: fileUpdatesState
+            type: string
+          - name: internalRequestTaskRunName
             type: string
           - name: tempDir
             type: string
@@ -103,6 +107,10 @@ spec:
               
               echo "Testing that file present in working directory is what we expect"
               diff "$(params.tempDir)/one-update/addons/my-addon2.yaml" "/tmp/my-addon2.yaml"
+
+              echo Test that internalRequestTaskRunName is not empty
+              test "$(params.internalRequestTaskRunName)" != ""
+
       workspaces:
         - name: pipeline
           workspace: tests-workspace

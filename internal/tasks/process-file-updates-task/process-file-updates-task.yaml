@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: process-file-updates-task
   labels:
-    app.kubernetes.io/version: "0.1"
+    app.kubernetes.io/version: "0.0.1"
   annotations:
     tekton.dev/pipelines.minVersion: "0.12.1"
     tekton.dev/tags: release
@@ -42,6 +42,8 @@ spec:
       description: fileUpdates detailed information
     - name: fileUpdatesState
       description: fileUpdates state
+    - name: internalRequestTaskRunName
+      description: name of this Task Run to be made available to caller
   workspaces:
     - name: pipeline
       description: workspace to read and save files
@@ -74,6 +76,8 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -eo pipefail
+
+        echo -n "$(context.taskRun.name)" > "$(results.internalRequestTaskRunName.path)"
 
         # loading git and gitlab functions
         # shellcheck source=/dev/null
