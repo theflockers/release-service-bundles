@@ -1,0 +1,14 @@
+---
+id: 1 
+distribution_scope: "stage"
+fbc_fragment: "registry.io/image0@sha256:0000" 
+internal_index_image_copy: "registry-proxy-stage.engineering.redhat.com/rh-osbs-stage/iib:1" 
+logs:
+url: "https://iib.stage.engineering.redhat.com/api/v1/builds/101459/logs" 
+request_type: "fbc-operations" 
+state: "complete"
+state_reason: ""
+state_history:
+  - state: "in_progress"
+    state_reason: "The request was initiated"
+user: "rhtap-release-iib-stage@IPA.REDHAT.COM"
