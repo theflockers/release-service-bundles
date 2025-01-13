@@ -53,7 +53,7 @@ function curl() {
     ;;
   "-u:")
     tempfile="$4"
-    echo -e '{ "fbc_opt_in": true}' > "$tempfile"
+    echo -e '{ "fbc_opt_in": true }' > "$tempfile"
     ;;
   "https://fakeiib.host/builds/1")
     echo "$@" >> mock_build_progress_calls
@@ -66,7 +66,8 @@ function curl() {
     echo "Logs are for weaks"
     ;;
   ":")
-     set -x
+    set -x
+    echo $@
     echo -en "${buildJson}" | jq -cr
     ;;
   *)
