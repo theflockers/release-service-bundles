@@ -67,8 +67,8 @@ function curl() {
     ;;
   ":")
     set -x
-    echo $@
     echo -en "${buildJson}" | jq -cr
+    echo $@
     ;;
   *)
     echo ""
