@@ -2,9 +2,9 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: test-update-fbc-catalog-prod
+  name: test-update-fbc-catalog-retry-complete
 spec:
-  description: Tests a production FBC release
+  description: Tests a production FBC release retry a complete build
   tasks:
     - name: run-task
       taskRef:
@@ -15,7 +15,7 @@ spec:
         - name: fromIndex
           value: "quay.io/scoheb/fbc-index-testing:latest"
         - name: targetIndex
-          value: "quay.io/fbc/catalog:test"
+          value: "quay.io/fbc/catalog:complete"
         - name: buildTags
           value: "[]"
         - name: addArches

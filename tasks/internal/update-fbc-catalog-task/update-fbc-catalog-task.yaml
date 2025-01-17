@@ -127,11 +127,12 @@ spec:
             # than the upstream catalog index.
             # in case the new catalog index is older than the upstream, a new build is
             # required to assure the catalog integrity.
-            if [ "${newCatalogCreatedDate}" -gt "${upstreamCatalogCreatedDate}" ]; then
-              echo "${build}"
-              exit
+            if [ "${newCatalogCreatedDate}" -lt "${upstreamCatalogCreatedDate}" ]; then
+              echo ""
+              return 0
             fi
           fi
+          echo "${build}"
         }
 
         # performs kerberos authentication.
@@ -272,6 +273,8 @@ spec:
                 esac
             done
             echo
+            # buildState is a json string that should be escaped to garantee that there is no evaluation of the content
+            # will happen before it is read by the calling task.
             jq -cr '{ "state": .state, "state_reason": .state_reason }' "$(results.jsonBuildInfo.path)" | jq -Rc \
             | tee "$(results.buildState.path)"
             test "${state}" = "complete" && exit 0 || exit 1

@@ -2,9 +2,9 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: test-update-fbc-catalog-prod
+  name: test-update-fbc-catalog-retry-in-progress
 spec:
-  description: Tests a production FBC release
+  description: Tests a production FBC release retry in progress
   tasks:
     - name: run-task
       taskRef:

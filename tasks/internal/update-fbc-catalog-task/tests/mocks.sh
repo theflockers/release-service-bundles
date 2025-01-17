@@ -67,14 +67,14 @@ function curl() {
   elif [[ "$params" =~ "-s https://fakeiib.host/builds?user=iib@kerberos&from_index=quay.io/scoheb/fbc-index-testing:"* ]]; then
     if [[ "$(context.taskRun.name)" =~ "test-update-fbc-catalog-retry-in-progress"* ]]; then
         echo -en "${buildSeed}" 
-    elif [[ "$(context.taskRun.name)" =~ test-update-fbc-catalog-retry* ]]; then
+    elif [[ "$(context.taskRun.name)" =~ test-update-fbc-catalog-retry-(complete|outdated)* ]]; then
         build=$(jq -rc '.items[0].state = "complete"' <<< "$buildSeed")
         build=$(jq -rc '.items[0].state_reason = "The FBC fragment was successfully added in the index image"' <<< "${build}")
-
         if [[ "$(context.taskRun.name)" =~ test-update-fbc-catalog-retry-outdated* ]]; then
             build=$(jq -rc '.items[0].retry = "outdated"' <<< "${build}")
         fi
     fi
+    echo "${build}"
 
   elif [[ "$params" == "-s https://fakeiib.host/builds/1" ]]; then
     echo "$*" >> mock_build_progress_calls
