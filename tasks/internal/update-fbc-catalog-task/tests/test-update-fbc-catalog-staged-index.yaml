@@ -73,18 +73,15 @@ spec:
                 exit 1
               fi
 
-              # jq fails to extract the required keys from a escaped json, so the json is first evaluated and then
-              # the keys contents are extracted.
-              state="$(jq -cr <<< "${BUILD_STATE}" | jq -r .state)"
+              state="$(jq -cr .state <<< "${BUILD_STATE}")"
               if [ "$state" != "complete" ]; then
                 echo "The task did not save a completed IIB build in buildState result"
                 exit 1
               fi
 
-              # jq fails to extract the required keys from a escaped json, so the json is first evaluated and then
-              # the keys contents are extracted.
-              genericResult=$(jq -cr <<< "${GENERIC_RESULT}" | jq -r \
-                '. |[.fbc_opt_in, .overwrite_fromindex_image, .publish_index_image,.sign_index_image] |@csv')
+              genericResult=$(jq -cr \
+                '. |[.fbc_opt_in, .overwrite_fromindex_image, .publish_index_image,.sign_index_image] |@csv' \
+                <<< "${GENERIC_RESULT}")
 
               if [ "$genericResult" != '"true","false","false","false"' ]; then
                 echo "The stask did not save the correct values in genericResult result"
