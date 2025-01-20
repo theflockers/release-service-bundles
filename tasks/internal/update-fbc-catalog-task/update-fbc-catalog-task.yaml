@@ -128,7 +128,6 @@ spec:
             # in case the new catalog index is older than the upstream, a new build is
             # required to assure the catalog integrity.
             if [ "${newCatalogCreatedDate}" -lt "${upstreamCatalogCreatedDate}" ]; then
-              echo ""
               return 0
             fi
           fi
